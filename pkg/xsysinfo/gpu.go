@@ -381,6 +381,24 @@ func GetGPUMemoryUsage() []GPUMemoryInfo {
 	// Try Vulkan as fallback for device detection (limited real-time data)
 	if len(gpus) == 0 {
 		vulkanGPUs := getVulkanGPUMemory()
+		// [gtr9 patch 2026-09-13] APU 统一内存感知:RADV 报的 totalVRAM 是专用
+		// carveout(512MB),APU 实际可用为 GTT 共享池;carveout<4GB 时用 GTT 覆盖,
+		// 修复 UI 显存显示/能力判定/画廊推荐失真(与 TotalAvailableVRAM 同源修复)。
+		if len(vulkanGPUs) > 0 {
+			for i := range vulkanGPUs {
+				if vulkanGPUs[i].TotalVRAM < 4*1024*1024*1024 {
+					for _, gttPath := range gttSysfsPaths {
+						if b, err := os.ReadFile(gttPath); err == nil {
+							if gtt, err := strconv.ParseUint(strings.TrimSpace(string(b)), 10, 64); err == nil && gtt > vulkanGPUs[i].TotalVRAM {
+								vulkanGPUs[i].TotalVRAM = gtt
+								vulkanGPUs[i].FreeVRAM = gtt - vulkanGPUs[i].UsedVRAM
+								break
+							}
+						}
+					}
+				}
+			}
+		}
 		gpus = append(gpus, vulkanGPUs...)
 	}
 
@@ -388,6 +406,24 @@ func GetGPUMemoryUsage() []GPUMemoryInfo {
 	if len(gpus) == 0 {
 		appleGPUs := getAppleGPUMemory()
 		gpus = append(gpus, appleGPUs...)
+	}
+
+	// [gtr9 patch 2026-09-13] APU 统一内存感知(统一收口):任何来源(nvidia/
+	// rocm-smi/vulkan/sysfs)报告的 VRAM<4GB,而系统暴露更大 GTT 共享池时
+	// (Strix Halo 等 APU 的典型形态:carveout 512MB + GTT 96G),用 GTT 总量
+	// 覆盖,修复 UI 显存显示/能力判定/画廊推荐失真。独显不受影响。
+	for i := range gpus {
+		if gpus[i].TotalVRAM > 0 && gpus[i].TotalVRAM < 4*1024*1024*1024 {
+			for _, gttPath := range gttSysfsPaths {
+				if b, err := os.ReadFile(gttPath); err == nil {
+					if gtt, err := strconv.ParseUint(strings.TrimSpace(string(b)), 10, 64); err == nil && gtt > gpus[i].TotalVRAM {
+						gpus[i].TotalVRAM = gtt
+						gpus[i].FreeVRAM = gtt - gpus[i].UsedVRAM
+						break
+					}
+				}
+			}
+		}
 	}
 
 	return gpus
