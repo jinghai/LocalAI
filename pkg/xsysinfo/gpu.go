@@ -118,6 +118,11 @@ func GPUs() ([]*gpu.GraphicsCard, error) {
 	return gpusOnce()
 }
 
+var gttSysfsPaths = []string{
+	"/sys/class/drm/card0/device/mem_info_gtt_total",
+	"/sys/class/drm/card1/device/mem_info_gtt_total",
+}
+
 func TotalAvailableVRAM() (uint64, error) {
 	// First, try ghw library detection
 	gpus, err := GPUs()
@@ -132,6 +137,19 @@ func TotalAvailableVRAM() (uint64, error) {
 		}
 		// If we got valid VRAM from ghw, return it
 		if totalVRAM > 0 {
+			// [gtr9 patch 2026-09-13] APU 统一内存感知:独显 carveout 场景(vram_total<4GB)时,
+			// 改用 GTT 总量(核显与 CPU 共享的内存池)作为可用 VRAM,否则 96G 级统一内存被误报为
+			// 512MB,导致能力判定降级 CPU 与画廊推荐失真。独显不受影响(vram_total>=4GB)。
+			if totalVRAM < 4*1024*1024*1024 {
+				for _, gttPath := range gttSysfsPaths {
+					if b, err := os.ReadFile(gttPath); err == nil {
+						if gtt, err := strconv.ParseUint(strings.TrimSpace(string(b)), 10, 64); err == nil && gtt > totalVRAM {
+							totalVRAM = gtt
+							break
+						}
+					}
+				}
+			}
 			capped, _ := DefaultVRAMBudget().Apply(totalVRAM, totalVRAM)
 			return capped, nil
 		}
@@ -146,6 +164,16 @@ func TotalAvailableVRAM() (uint64, error) {
 			totalVRAM += gpu.TotalVRAM
 		}
 		if totalVRAM > 0 {
+			if totalVRAM < 4*1024*1024*1024 {
+				for _, gttPath := range gttSysfsPaths {
+					if b, err := os.ReadFile(gttPath); err == nil {
+						if gtt, err := strconv.ParseUint(strings.TrimSpace(string(b)), 10, 64); err == nil && gtt > totalVRAM {
+							totalVRAM = gtt
+							break
+						}
+					}
+				}
+			}
 			xlog.Debug("VRAM detected via binary tools", "total_vram", totalVRAM)
 			capped, _ := DefaultVRAMBudget().Apply(totalVRAM, totalVRAM)
 			return capped, nil
