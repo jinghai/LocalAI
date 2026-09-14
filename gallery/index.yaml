@@ -198,11 +198,11 @@
       use_tokenizer_template: true
   files:
     - filename: llama-cpp/models/Qwopus3.8-27B-Flash-MTP-Q4_K_M/Qwopus3.8-27B-Flash-MTP-Q4_K_M.gguf
-      sha256: 2b9a335bd33bb977d3127062061c12cc94f37ceef1850d372317fbf4ee89d9c5
-      uri: https://huggingface.co/Jackrong/Qwopus3.8-27B-Flash-GGUF/resolve/e146d61e88782677805b3b68ad3adf8674dde80d/Qwopus3.8-27B-Flash-MTP-Q4_K_M.gguf
+      sha256: 1b76ad1596d6afc0b6e38a2b45b404462920739bd3087960b7a18a74ca938a74
+      uri: https://huggingface.co/Jackrong/Qwopus3.8-27B-Flash-GGUF/resolve/main/Qwopus3.8-27B-Flash-MTP-Q4_K_M.gguf
     - filename: llama-cpp/mmproj/Qwopus3.8-27B-Flash-MTP-Q4_K_M/mmproj-F32.gguf
-      sha256: be3f444ecaedf084fd19399ba18cefcbbe3789bb81f4ad5ed67c91a1a3f48a67
-      uri: https://huggingface.co/Jackrong/Qwopus3.8-27B-Flash-GGUF/resolve/e146d61e88782677805b3b68ad3adf8674dde80d/mmproj-F32.gguf
+      sha256: 52e6818e4d18eea010c50e5245eaa10a8cc3dcc30efea4ff60cbad8abf5669e1
+      uri: https://huggingface.co/Jackrong/Qwopus3.8-27B-Flash-GGUF/resolve/main/mmproj-F32.gguf
 - name: "qwopus3.8-27b-flash-q8"
   url: "https://ghproxy.net/https://raw.githubusercontent.com/mudler/LocalAI/master/gallery/virtual.yaml"
   urls:
@@ -245,11 +245,11 @@
       use_tokenizer_template: true
   files:
     - filename: llama-cpp/models/Qwopus3.8-27B-Flash-MTP-Q8_0/Qwopus3.8-27B-Flash-MTP-Q8_0.gguf
-      sha256: a97de033ea60066a1941fe4dfb2e631b390cbc7c7563cea2446b7f08065228ec
-      uri: https://huggingface.co/Jackrong/Qwopus3.8-27B-Flash-GGUF/resolve/e146d61e88782677805b3b68ad3adf8674dde80d/Qwopus3.8-27B-Flash-MTP-Q8_0.gguf
+      sha256: 98e47b3da5f41c1753a45dbbc4d98e94fd05101c1ab5425d341ff0e58fe2e292
+      uri: https://huggingface.co/Jackrong/Qwopus3.8-27B-Flash-GGUF/resolve/main/Qwopus3.8-27B-Flash-MTP-Q8_0.gguf
     - filename: llama-cpp/mmproj/Qwopus3.8-27B-Flash-MTP-Q4_K_M/mmproj-F32.gguf
-      sha256: be3f444ecaedf084fd19399ba18cefcbbe3789bb81f4ad5ed67c91a1a3f48a67
-      uri: https://huggingface.co/Jackrong/Qwopus3.8-27B-Flash-GGUF/resolve/e146d61e88782677805b3b68ad3adf8674dde80d/mmproj-F32.gguf
+      sha256: 52e6818e4d18eea010c50e5245eaa10a8cc3dcc30efea4ff60cbad8abf5669e1
+      uri: https://huggingface.co/Jackrong/Qwopus3.8-27B-Flash-GGUF/resolve/main/mmproj-F32.gguf
 - name: "qwen3.8-27b"
   url: "https://ghproxy.net/https://raw.githubusercontent.com/mudler/LocalAI/master/gallery/virtual.yaml"
   urls:
